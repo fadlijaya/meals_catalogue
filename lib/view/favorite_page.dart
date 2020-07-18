@@ -4,14 +4,14 @@ import 'package:mealscatalogue/helpers/db_helper.dart';
 import 'package:mealscatalogue/model/favorite_model.dart';
 import 'food_detail_page.dart';
 
-class FavoritePage extends StatefulWidget{
+class FavoritePage extends StatefulWidget {
   FavoritePage({Key key}) : super(key: key);
 
   @override
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage>{
+class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -23,42 +23,36 @@ class _FavoritePageState extends State<FavoritePage>{
             bottom: PreferredSize(
               preferredSize: Size(0, 0),
               child: Container(
-                child: TabBar(
-                  indicatorColor: kBlack,
-                    tabs: [
-                      Container(
-                        height: 48,
-                        child: Tab(
-                          text: kSeafood,
-                        ),
-                      ),
-                      Container(
-                        height: 48,
-                        child: Tab(
-                          text: kDessert,
-                        ),
-                      )
-                    ]
-                ),
+                child: TabBar(indicatorColor: kBlack, tabs: [
+                  Container(
+                    height: 48,
+                    child: Tab(
+                      text: kSeafood,
+                    ),
+                  ),
+                  Container(
+                    height: 48,
+                    child: Tab(
+                      text: kDessert,
+                    ),
+                  )
+                ]),
               ),
             ),
           ),
-          body: TabBarView(
-              children: <Widget>[
-                FavoriteView(foodCategory: kSeafood),
-                FavoriteView(foodCategory: kDessert)
-              ]
-          ),
-        )
-    );
+          body: TabBarView(children: <Widget>[
+            FavoriteView(foodCategory: kSeafood),
+            FavoriteView(foodCategory: kDessert)
+          ]),
+        ));
   }
-
 }
 
 class FavoriteView extends StatefulWidget {
   final String foodCategory;
 
   const FavoriteView({Key key, this.foodCategory}) : super(key: key);
+
   @override
   _FavoriteViewState createState() => _FavoriteViewState();
 }
@@ -71,17 +65,16 @@ class _FavoriteViewState extends State<FavoriteView> {
     // TODO: implement build
     return Scaffold(
       body: FutureBuilder(
-        future: db.getFavorite(widget.foodCategory),
-          builder: (context, snapshot){
-            if(snapshot.hasError) print(snapshot.error);
+          future: db.getFavorite(widget.foodCategory),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
             var data = snapshot.data;
             return snapshot.hasData
                 ? FavoriteGridView(data)
                 : Center(
-                child: Text('No Data'),
-            );
-          }
-      ),
+                    child: Text('No Data'),
+                  );
+          }),
     );
   }
 }
@@ -90,6 +83,7 @@ class FavoriteGridView extends StatefulWidget {
   final List<Favorite> favoriteData;
 
   FavoriteGridView(this.favoriteData);
+
   @override
   _FavoriteGridViewState createState() => _FavoriteGridViewState();
 }
@@ -99,14 +93,13 @@ class _FavoriteGridViewState extends State<FavoriteGridView> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return GridView.builder(
-      itemCount: widget.favoriteData.length,
+        itemCount: widget.favoriteData.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: defaultPadding / 4,
-          crossAxisSpacing: defaultPadding /4,
-          childAspectRatio: 0.75
-        ),
-        itemBuilder: (context, index){
+            crossAxisCount: 2,
+            mainAxisSpacing: defaultPadding / 4,
+            crossAxisSpacing: defaultPadding / 4,
+            childAspectRatio: 0.75),
+        itemBuilder: (context, index) {
           return GestureDetector(
             child: Container(
               margin: EdgeInsets.all(defaultPadding / 2),
@@ -135,20 +128,17 @@ class _FavoriteGridViewState extends State<FavoriteGridView> {
                 ],
               ),
             ),
-            onTap: (){
+            onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => FoodDetailPage(
-                        foodId: widget.favoriteData[index].foodId,
-                        foodName: widget.favoriteData[index].foodName,
-                        foodPicture: widget.favoriteData[index].foodPicture,
-                      )
-                  )
-              );
+                            foodId: widget.favoriteData[index].foodId,
+                            foodName: widget.favoriteData[index].foodName,
+                            foodPicture: widget.favoriteData[index].foodPicture,
+                          )));
             },
           );
-        }
-    );
+        });
   }
 }

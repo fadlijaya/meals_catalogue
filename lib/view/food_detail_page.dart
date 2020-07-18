@@ -5,12 +5,14 @@ import 'package:mealscatalogue/model/favorite_model.dart';
 import 'package:mealscatalogue/model/food_model.dart';
 import 'package:mealscatalogue/service/food_service.dart';
 
-class FoodDetailPage extends StatefulWidget{
+class FoodDetailPage extends StatefulWidget {
   final String foodId;
   final String foodName;
   final String foodPicture;
 
-  const FoodDetailPage({Key key, this.foodId, this.foodName, this.foodPicture}) : super(key: key);
+  const FoodDetailPage({Key key, this.foodId, this.foodName, this.foodPicture})
+      : super(key: key);
+
   @override
   _FoodDetailPageState createState() => _FoodDetailPageState();
 }
@@ -20,7 +22,7 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
   bool isFavorite = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _getFoodById();
     _isFavorite();
@@ -29,7 +31,7 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
   Future _getFoodById() async {
     var foodService = FoodService();
     var response = await foodService.getFoodById(widget.foodId);
-    if(!mounted) return;
+    if (!mounted) return;
     setState(() {
       foodDetail = response;
     });
@@ -45,17 +47,13 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
 
   Future saveFavorite() async {
     var db = DBHelper();
-    var favorite = Favorite(
-        widget.foodId,
-        widget.foodName,
-        widget.foodPicture,
-        foodDetail[0].foodCategory
-    );
+    var favorite = Favorite(widget.foodId, widget.foodName, widget.foodPicture,
+        foodDetail[0].foodCategory);
     await db.saveFavorite(favorite);
     print("saved");
   }
 
-  deleteFavorite(foodId){
+  deleteFavorite(foodId) {
     var db = DBHelper();
     db.deleteFavorite(foodId);
   }
@@ -64,62 +62,96 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.foodName
-        ),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, false)
-        ),
-        actions: <Widget>[
-          IconButton(
-              tooltip: 'Favorite',
-              icon: Icon(
-               isFavorite ? Icons.favorite : Icons.favorite_border
-              ),
-              onPressed: (){
-                setState(() {
-                  if(isFavorite){
-                    deleteFavorite(widget.foodId);
-                    isFavorite = false;
-                  } else {
-                    saveFavorite();
-                    isFavorite = true;
-                  }
-                });
-              }
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(bottom: defaultPadding),
-                    child: Hero(
-                        tag: widget.foodId,
-                        child: Image.network(
-                          widget.foodPicture,
-                          fit: BoxFit.cover,
-                        )
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Hero(
+                      tag: widget.foodId,
+                      child: Material(
+                        child: Stack(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(30),
+                                  bottomLeft: Radius.circular(30)),
+                              child: Image.network(
+                                widget.foodPicture,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                                top: 9,
+                                left: 9,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color: Colors.black.withOpacity(0.3)),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                  ),
+                                )),
+                            Positioned(
+                                top: 9,
+                                right: 9,
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color: kWhite,
+                                    ),
+                                    child: IconButton(
+                                        tooltip: 'Favorite',
+                                        icon: Icon(isFavorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (isFavorite) {
+                                              deleteFavorite(widget.foodId);
+                                              isFavorite = false;
+                                            } else {
+                                              saveFavorite();
+                                              isFavorite = true;
+                                            }
+                                          });
+                                        }))),
+                          ],
+                        ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(defaultPadding),
+                      child: Text(
+                        widget.foodName,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    )
                   ],
                 ),
-            ),
-            buildFoodDetail()
-          ],
+              ),
+              buildFoodDetail()
+            ],
+          ),
         ),
       ),
     );
   }
 
   Container buildFoodDetail() {
-    if(foodDetail == null){
+    if (foodDetail == null) {
       return Container(
         child: Center(
           child: CircularProgressIndicator(),
@@ -127,44 +159,70 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
       );
     } else {
       return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10)
-        ),
         child: Padding(
-          padding: EdgeInsets.all(defaultPadding),
+          padding: EdgeInsets.only(
+              left: defaultPadding,
+              right: defaultPadding,
+              bottom: defaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
                 "Category",
-                style: TextStyle(color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: defaultPadding/8, bottom: defaultPadding/2),
+                padding: const EdgeInsets.only(
+                    top: defaultPadding / 8, bottom: defaultPadding / 2),
                 child: Text(
                   foodDetail[0].foodCategory,
-                  style: TextStyle(color: kBlack), textAlign: TextAlign.justify,
+                  style: TextStyle(color: kBlack),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+              Text(
+                "Area",
+                style: TextStyle(
+                    color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: defaultPadding / 8, bottom: defaultPadding / 2),
+                child: Text(
+                  foodDetail[0].foodArea,
+                  style: TextStyle(color: kBlack),
+                  textAlign: TextAlign.justify,
                 ),
               ),
               Text(
                 "Ingredients",
-                style: TextStyle(color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: defaultPadding/8, bottom: defaultPadding/2),
+                padding: const EdgeInsets.only(
+                    top: defaultPadding / 8, bottom: defaultPadding / 2),
                 child: Text(
                   foodDetail[0].foodIngredients,
-                  style: TextStyle(color: kBlack), textAlign: TextAlign.justify,
+                  style: TextStyle(color: kBlack),
+                  textAlign: TextAlign.justify,
                 ),
               ),
               Text(
-                  "Instructions",
-                  style: TextStyle(color: kBlack, fontSize: 16, fontWeight: FontWeight.bold), ),
+                "Instructions",
+                style: TextStyle(
+                    color: kBlack, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               Padding(
-                padding: const EdgeInsets.only(top: defaultPadding/8, bottom: defaultPadding/2),
+                padding: const EdgeInsets.only(
+                    top: defaultPadding / 8, bottom: defaultPadding / 2),
                 child: Text(
                   foodDetail[0].foodDetail,
-                  style: TextStyle(color: kBlack,), textAlign: TextAlign.justify,
+                  style: TextStyle(
+                    color: kBlack,
+                  ),
+                  textAlign: TextAlign.justify,
                 ),
               ),
             ],
@@ -173,5 +231,4 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
       );
     }
   }
-
 }

@@ -1,4 +1,4 @@
-class Favorite{
+class Favorite {
   int id;
   String _foodId, _foodName, _foodPicture, _foodCategory;
 
@@ -12,8 +12,11 @@ class Favorite{
   }
 
   String get foodId => _foodId;
+
   String get foodName => _foodName;
+
   String get foodPicture => _foodPicture;
+
   String get foodCategory => _foodCategory;
 
   Map<String, dynamic> toMap() {

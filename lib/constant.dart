@@ -8,4 +8,3 @@ const String kDessert = 'Dessert';
 
 const kWhite = Color(0xFFFFFFFF);
 const kBlack = Color(0xFF000000);
-

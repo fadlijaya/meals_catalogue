@@ -5,10 +5,11 @@ import 'package:mealscatalogue/service/food_service.dart';
 import 'package:mealscatalogue/view/food_detail_page.dart';
 import 'package:mealscatalogue/view/food_search.dart';
 
-class DessertPage extends StatefulWidget{
+class DessertPage extends StatefulWidget {
   final String foodCategory;
 
   DessertPage({Key key, this.foodCategory}) : super(key: key);
+
   @override
   _DessertPageState createState() => _DessertPageState();
 }
@@ -17,7 +18,7 @@ class _DessertPageState extends State<DessertPage> {
   List<Food> foodList;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _getFoodByCategory();
   }
@@ -25,7 +26,7 @@ class _DessertPageState extends State<DessertPage> {
   Future _getFoodByCategory() async {
     var foodService = FoodService();
     var response = await foodService.getFoodByCategory(widget.foodCategory);
-    if(!mounted) return ;
+    if (!mounted) return;
     setState(() {
       foodList = response;
     });
@@ -38,83 +39,83 @@ class _DessertPageState extends State<DessertPage> {
   }
 
   SafeArea buildCard(BuildContext context) {
-    if(foodList == null){
+    if (foodList == null) {
       return SafeArea(
           child: Center(
-            child: CircularProgressIndicator(),
-          )
-      );
+        child: CircularProgressIndicator(),
+      ));
     } else {
       return SafeArea(
           child: Scaffold(
-            floatingActionButton: FloatingActionButton(
-                onPressed: (){
+        appBar: AppBar(
+          title: Text(
+            kTitle,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.search),
+                tooltip: 'Search',
+                color: kBlack,
+                onPressed: () {
                   showSearch(
                       context: context,
                       delegate: FoodSearch(
                           foodCategory: widget.foodCategory,
-                          foodList: foodList
-                      )
-                  );
-                },
-              child: Icon(Icons.search),
-              tooltip: 'Search',
-              backgroundColor: kBlack,
-            ),
-            body: GridView.builder(
-                itemCount: foodList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: defaultPadding / 4,
-                  crossAxisSpacing: defaultPadding /4,
-                  childAspectRatio: 0.75
-                ),
-                itemBuilder: (context, index){
-                  return GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.all(defaultPadding / 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Hero(
-                              tag: foodList[index].foodId,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.network(
-                                  foodList[index].foodPicture,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                          foodList: foodList));
+                })
+          ],
+        ),
+        body: GridView.builder(
+            itemCount: foodList.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: defaultPadding / 4,
+                crossAxisSpacing: defaultPadding / 4,
+                childAspectRatio: 0.75),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                child: Container(
+                  margin: EdgeInsets.all(defaultPadding / 2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Hero(
+                          tag: foodList[index].foodId,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              foodList[index].foodPicture,
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: defaultPadding / 4),
-                            child: Text(
-                              foodList[index].foodName,
-                              style: TextStyle(color: kBlack),
-                            ),
-                          )
-                        ],
+                        ),
                       ),
-                    ),
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FoodDetailPage(
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: defaultPadding / 4),
+                        child: Text(
+                          foodList[index].foodName,
+                          style: TextStyle(color: kBlack),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FoodDetailPage(
                                 foodId: foodList[index].foodId,
                                 foodName: foodList[index].foodName,
                                 foodPicture: foodList[index].foodPicture,
-                              )
-                          )
-                      );
-                    },
-                  );
-                }
-            ),
-          )
-      );
+                              )));
+                },
+              );
+            }),
+      ));
     }
   }
 }

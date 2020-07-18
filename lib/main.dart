@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: kTitle,
       theme: ThemeData(
-        primaryColor: kWhite
+        primaryColor: kWhite,
       ),
       home: Home(),
     );

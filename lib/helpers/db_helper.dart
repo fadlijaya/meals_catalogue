@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DBHelper{
+class DBHelper {
   static final DBHelper _instance = DBHelper.internal();
 
   DBHelper.internal();
@@ -15,7 +15,7 @@ class DBHelper{
   static Database _db;
 
   Future<Database> get db async {
-    if(_db != null) return _db;
+    if (_db != null) return _db;
     _db = await setDB();
     return _db;
   }
